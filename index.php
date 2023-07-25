@@ -1,13 +1,15 @@
 <?php
 
 require "src/conexao-bd.php";
-$sql1 = "SELECT * FROM produtos WHERE tipo = 'Café' ORDER BY preco";
-$statement =  $pdo->query($sql1);
-$produtosCafe = $statement->fetchAll(PDO::FETCH_ASSOC); //fetchAll: é o mesmo que falar, olha PHP, me retorna tudo que vc tem. FETCH_ASSOC = me retorna um array associativo, ou seja, a chave de cada valor vai ser correspondente a coluna no banco de dados, ou seja, a coluna tipo vai ser uma chave no array, nome outra chave, etc
+require "src/Modelo/Produto.php";
+require "src/Repositorio/ProdutoRepositorio.php";
 
-$sql2 = "SELECT * FROM produtos WHERE tipo = 'Almoço' ORDER BY preco";
-$statement =  $pdo->query($sql2);
-$produtosAlmoco = $statement->fetchAll(PDO::FETCH_ASSOC);
+$produtosRepositorio = new ProdutoRepositorio($pdo);
+$dadosCafe = $produtosRepositorio->opcoesCafe();
+$dadosAlmoco = $produtosRepositorio->opcoesAlmoco();
+
+
+
 ?>
 
 <!doctype html>
@@ -41,14 +43,14 @@ $produtosAlmoco = $statement->fetchAll(PDO::FETCH_ASSOC);
             <img class="ornaments" src="img/ornaments-coffee.png" alt="ornaments">
         </div>
         <div class="container-cafe-manha-produtos">
-            <?php foreach ($produtosCafe as $cafe): //abre o foreach?>
+            <?php foreach ($dadosCafe as $cafe): //abre o foreach?>
                 <div class="container-produto">
                     <div class="container-foto">
-                        <img src="<?= "img/" . $cafe['imagem'] ?>">
+                        <img src="<?= $cafe->getImagemDiretorio() //acesso a imagem como se fosse métodos?>">
                     </div>
-                    <p><?php echo $cafe['nome'] ?></p>
-                    <p><?= $cafe['descricao'] ?></p>
-                    <p><?= "R$ " . $cafe['preco'] ?></p>
+                    <p><?php echo $cafe->getNome() ?></p>
+                    <p><?= $cafe->getDescricao() ?></p>
+                    <p><?= $cafe->getPrecoFormatado()?></p>
                 </div>
             <?php endforeach;//fecha o foreach ?>
         </div>
@@ -59,14 +61,14 @@ $produtosAlmoco = $statement->fetchAll(PDO::FETCH_ASSOC);
             <img class="ornaments" src="img/ornaments-coffee.png" alt="ornaments">
         </div>
         <div class="container-almoco-produtos">
-            <?php foreach ($produtosAlmoco as $almoco): ?>
+            <?php foreach ($dadosAlmoco as $almoco): ?>
                 <div class="container-produto">
                     <div class="container-foto">
-                        <img src="<?= "img/" . $almoco['imagem'] ?>">
+                        <img src="<?= $almoco->getImagemDiretorio()?>">
                     </div>
-                    <p><?= $almoco['nome'] ?></p>
-                    <p><?= $almoco['descricao'] ?></p>
-                    <p><?= "R$ " . $almoco['preco'] ?></p>
+                    <p><?= $almoco->getNome() ?></p>
+                    <p><?= $almoco->getDescricao() ?></p>
+                    <p><?= $almoco->getPrecoFormatado()?></p>
                 </div>
             <?php endforeach; ?>
         </div>
