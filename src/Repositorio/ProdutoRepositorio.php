@@ -15,8 +15,8 @@ class ProdutoRepositorio
             $dados['tipo'],
             $dados['nome'],
             $dados['descricao'],
-            $dados['imagem'],
-            $dados['preco']);
+            $dados['preco'],
+            $dados['imagem']);
     }
 
     public function opcoesCafe(): array
@@ -25,7 +25,7 @@ class ProdutoRepositorio
         $statement = $this->pdo->query($sql1);
         $produtosCafe = $statement->fetchAll(PDO::FETCH_ASSOC); //fetchAll: é o mesmo que falar, olha PHP, me retorna tudo que vc tem. FETCH_ASSOC = me retorna um array associativo, ou seja, a chave de cada valor vai ser correspondente a coluna no banco de dados, ou seja, a coluna tipo vai ser uma chave no array, nome outra chave, etc
 
-        $dadosCafe = array_map(function ($cafe){
+        $dadosCafe = array_map(function ($cafe) {
             return $this->formarObjeto($cafe);
         }, $produtosCafe);
 
@@ -40,10 +40,43 @@ class ProdutoRepositorio
         $statement = $this->pdo->query($sql2);
         $produtosAlmoco = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-        $dadosAlmoco = array_map(function ($almoco){
+        $dadosAlmoco = array_map(function ($almoco) {
             return $this->formarObjeto($almoco);
-        },$produtosAlmoco);
+        }, $produtosAlmoco);
 
-        return  $dadosAlmoco;
+        return $dadosAlmoco;
+    }
+
+    public function buscarTodos()
+    {
+        $sql = "SELECT * FROM produtos ORDER BY preco";
+        $statement = $this->pdo->query($sql);
+        $dados = $statement->fetchAll(PDO::FETCH_ASSOC); //busca todos os dados que estão no bando de dados. Fetch assoc associa a coluna do banco de dados com o nome das chaves aqui no array no php
+
+        $todosOsDados = array_map(function ($produto) {
+            return $this->formarObjeto($produto);
+        }, $dados);
+
+        return $todosOsDados;
+    }
+
+    public function deletar(int $id)
+    {
+        $sql = "DELETE FROM produtos WHERE id = ?";
+        $statement = $this->pdo->prepare($sql); //agora euq uero trabalhar com instruções preparadas, ou seja, quero preparar uma instrução antes de enviar ela, pois vou mandar um parametro (id)
+        $statement->bindValue(1, $id); //bindValue serve para proteger de ataques como SQL injection. O primeiro parametro seria essa interrogação da query
+        $statement->execute();
+    }
+
+    public function salvar(Produto $produto)
+    {
+        $sql = "INSERT INTO produtos (tipo, nome, descricao, preco, imagem) VALUES (?, ?, ?, ?, ?)";
+        $statement = $this->pdo->prepare($sql);
+        $statement->bindValue(1, $produto->getTipo());
+        $statement->bindValue(2, $produto->getNome());
+        $statement->bindValue(3, $produto->getDescricao());
+        $statement->bindValue(4, $produto->getPreco());
+        $statement->bindValue(5, $produto->getImagem());
+        $statement->execute();
     }
 }
