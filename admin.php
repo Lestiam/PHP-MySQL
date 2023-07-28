@@ -6,6 +6,10 @@ require "src/Repositorio/ProdutoRepositorio.php";
 $produtoRepositorio = new ProdutoRepositorio($pdo); //essa variavel $pedo esta vindo do require do conexao-bd
 $produtos = $produtoRepositorio->buscarTodos();
 
+
+
+
+
 ?>
 
 <!doctype html>
@@ -53,7 +57,7 @@ $produtos = $produtoRepositorio->buscarTodos();
                     <td><?= $produto->getTipo() ?></td>
                     <td><?= $produto->getDescricao() ?> </td>
                     <td><?= $produto->getPrecoFormatado() ?></td>
-                    <td><a class="botao-editar" href="editar-produto.html">Editar</a></td>
+                    <td><a class="botao-editar" href="editar-produto.php?id=<?= $produto->getId() ?>">Editar</a></td>
                     <td>
                         <form action="excluir-produto.php" method="post" ><!-- com o method="post", o sistema não envia os dados mais atraves da URL mas sim, atraves do corpo da requisição, ou seja, é uma forma mais segura -->
                             <input type="hidden" name="id" value="<?= $produto->getId() //o name="id" serve para passar o parametro para o produto e para o navegador ?>">
@@ -65,7 +69,7 @@ $produtos = $produtoRepositorio->buscarTodos();
             </tbody>
         </table>
         <a class="botao-cadastrar" href="cadastrar-produto.php">Cadastrar produto</a>
-        <form action="#" method="post">
+        <form action="gerador-pdf.php" method="post">
             <input type="submit" class="botao-cadastrar" value="Baixar Relatório"/>
         </form>
     </section>

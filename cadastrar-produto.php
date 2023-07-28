@@ -12,11 +12,15 @@ if (isset($_POST['cadastro'])) {
         $_POST['preco']
     ); //o primeiro parametro é nulo porque não sabemos qual id este produto irá receber
 
+    if ($_FILES['imagem']['error'] == UPLOAD_ERR_OK) { //se existir um arquivo de imagem...
+        $produto->setImagem(uniqid($_FILES['imagem']['name'])); //a chave name guarda o nome da imagem. A função uniqid gera um código aleatório para que não de confusão quando carregarmos imagens com o mesmo nome
+        move_uploaded_file($_FILES['imagem']['tmp_name'], $produto->getImagemDiretorio()); //como primeiro parametro passamos de onde e como segundo parametro para onde. Move o arquivo de um lugar a outro. traz os arquivos enviados através de formulários. O ['tmp_name'] é o local onde o php armazena as imagens temporariamente
+    }
     $produtoRepositorio = new ProdutoRepositorio($pdo);
     $produtoRepositorio->salvar($produto);
 
     header("Location: admin.php");
-    
+
 }
 ?>
 
@@ -47,7 +51,8 @@ if (isset($_POST['cadastro'])) {
         <img class="ornaments" src="img/ornaments-coffee.png" alt="ornaments">
     </section>
     <section class="container-form">
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
+            <!-- enctype="multipart/form-data" faz o formulario entender que ele precisa enviar algo a mais do que textos, ou seja, irá enviar imagens também -->
 
             <label for="nome">Nome</label>
             <input type="text" id="nome" name="nome" placeholder="Digite o nome do produto" required>
